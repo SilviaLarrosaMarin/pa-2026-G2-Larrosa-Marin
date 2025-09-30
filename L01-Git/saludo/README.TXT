@@ -1,4 +1,4 @@
-README V2
+Versión V3 del fichero README.TXT
 
 Saludo.java --> Programa que imprime un saludo
 Hola.java --> Programa que imprime otro saludo
