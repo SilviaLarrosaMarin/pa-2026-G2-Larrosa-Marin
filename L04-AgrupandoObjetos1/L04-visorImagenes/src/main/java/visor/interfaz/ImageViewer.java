@@ -118,7 +118,9 @@ public class ImageViewer
     }
 
     /**
-     * Save As function: save the current image to a file.
+     * Función "Guardar como...": Guarda la imagen actualmente cargada "CurrentImage" en un archivo
+     * <p>
+     * Nota: Si no hay imagen cargada, el método no realiza ninguna acción.
      */
     private void saveAs()
     {

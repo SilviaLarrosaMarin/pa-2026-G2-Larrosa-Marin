@@ -7,9 +7,9 @@ import java.util.List;
 import visor.imagen.OFImage;
 
 /**
- * An image filter to detect edges and highlight them, a bit like 
- * a colored pencil drawing.
- * 
+ * Un filtro de imagen para detectar los bordes y resaltados, creando un efecto 
+ * similar a un dibujo a lápiz de color
+ * <p>
  * @author Michael Kölling and David J. Barnes.
  * @version 1.0
  */
