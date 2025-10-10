@@ -12,6 +12,7 @@ public class Medico {
     private String idMedico;
     /** La especialidad es una cadena de caracteres */
     private String especialidad;
+    
     /** El horario es una matriz de tamaño NUM_DIAS x NUM_HORAS 
      *  <p>
      *  Consideraremos 5 días (0= lunes, 1= martes, ..., 4= viernes)
@@ -21,17 +22,23 @@ public class Medico {
      *  la franja de 16:00 hasta 19:00h se considera de "tardes"
      */
     private String[][] horario; 
+    
+        
     /** NUM_DIAS es una constante que representa el máximo de días
      *  Un médico trabaja 5 días a la semana
      */
     private final int NUM_DIAS=5; 
+    
+    
     /** NUM_HORAS es una constante que representa el máximo de horas de trabajo al día
      *  Un médico trabaja 8 horas cada día
      */
     private final int NUM_HORAS=8; //9, 10. 11. 12, 16, 17, 18, 19
     
+    
+    
     /**
-     * Creamos un médito indicando su identificador y su especialidad
+     * Creamos un método indicando su identificador y su especialidad
      * 
      * Cuando creamos un objeto de tipo Medico su horario está "vacío"
      * (el valor de cada "casilla" es null)
@@ -76,7 +83,9 @@ public class Medico {
      */
     private boolean diaValido(int dia) {
         
-        return false;
+        return dia >= 0 && dia <= 4;
+        
+        // Como NUM_DIAS = 5, también hubiése valido dia >= 0 || dia < NUM_DIAS;
     }
     
     /**
@@ -86,7 +95,7 @@ public class Medico {
      */
     private boolean franjaValida(String franja) {
         
-        return false;
+        return franja.equalsIgnoreCase("mañana") || franja.equalsIgnoreCase("tarde");
     }
     
     /**
@@ -102,9 +111,43 @@ public class Medico {
      * o bien el día especificado es inválido o la franja especificada es inválida 
      */
     public Cita reservarCita(int dia, String franja, String paciente) {
-        Cita cita = null;
         
-        return cita;    
+        // Validar dia y franja
+    	if (!diaValido(dia) || !franjaValida(franja)) {
+    		return null;
+    	}
+    	
+    	// Horas según franja
+    	int inicio;
+    	int fin;
+    	
+    	if (franja.equalsIgnoreCase("mañana")) {
+    		inicio = 0;
+    		fin = 3;
+    	} else {
+    		inicio = 4;
+    		fin = 7;
+    	}
+        
+    	// Bucle que recorre el horario en el día y horas especificadas por la franja
+    	// y devuelve un obejto de tipo cita con la primera hora encontrada para ese dia
+    	
+    	for (int indice_hora = inicio; indice_hora <= fin; indice_hora++) {
+    		if (horario[dia][indice_hora] == null) {
+    			horario[dia][indice_hora] = paciente;
+    			
+    			// Cambiar dia y hora a string para poder usarlos en Cita
+    			String dia_str = dia(dia);
+    			String hora_str = hora(indice_hora);
+    			
+    			// Crear objeto cita con los datos pasados por parámetro
+    			Cita cita = new Cita(paciente, this.idMedico, this.especialidad, dia_str, hora_str);
+    			cita.imprimirCita();
+    			
+    			return cita;
+    		}
+    	}
+    	return null;
     }
     
     /**
@@ -119,8 +162,36 @@ public class Medico {
      */ 
     public void printHorario() {
         
-        System.out.println("Método sin implementar");
+        // Cabecera inicial con datos del médico
+    	System.out.println("\nHorario del doctor: " + idMedico + "    Especialidad: " + especialidad);
+    	System.out.println();
+    	
+    	// Cabecera horas
+    	System.out.printf("%-11s", ""); // Espacio antes de las horas con el mismo tamaño que la columna de días
+    	
+    	// Bucle que recorre los índices de las horas y pone su correspondiente cadena
+    	for(int indice_hora = 0; indice_hora < NUM_HORAS; indice_hora++) {
+    		System.out.printf("%-7s", hora(indice_hora));
+    	}
+    	System.out.println(); // Separa horas del resto del horario
         
+    	
+    	// Bucle para el cuerpo del horario: días y huecos
+    	for (int indice_dia = 0; indice_dia < NUM_DIAS; indice_dia++) {
+    		System.out.printf("%-11s", dia(indice_dia));
+    		
+    		// Bucle para recorrer las horas y ver si en ese día y hora hay un hueco o un paciente ("---" o nombre paciente)
+    		for (int indice_hora = 0; indice_hora < NUM_HORAS; indice_hora++) {
+    			if (horario[indice_dia][indice_hora] == null) {
+    				System.out.printf("%-7s", "---");
+    			} else {
+    				System.out.printf("%-7s", horario[indice_dia][indice_hora]);
+    			}
+    		}
+    		System.out.println(); // Separa cada fila de día de la siguiente 
+    	}
+    	System.out.println(); // Separa el horario del resto del código
+    	
     }
     
     /**
@@ -130,9 +201,17 @@ public class Medico {
      * Si el valor numérico introducido no se corresponde con ningún día se devuelve una cadena vacía
      */
     private String dia(int indice) {
-        
-        return "Método sin implementar";
+    	switch(indice) {
+    	case 0: return "Lunes";
+    	case 1: return "Martes";
+    	case 2: return "Miércoles";
+    	case 3: return "Jueves";
+    	case 4: return "Viernes";
+    	default: return "";
+    	}
     }
+    
+    
     /**
      * Método que devuelve la cadena de caracteres asociada al valor numérico correspondiente
      * @param indice representa un valor entre 0..7
@@ -140,8 +219,17 @@ public class Medico {
      * Si el valor numérico introducido no se corresponde con ningún día se devuelve una cadena vacía
      */
     private String hora(int indice) {
-        
-        return "Método sin implementar";
+    	switch(indice) {
+    	case 0: return "9:00h";
+    	case 1: return "10:00h";
+    	case 2: return "11:00h";
+    	case 3: return "12:00h";
+    	case 4: return "16:00h";
+    	case 5: return "17:00h";
+    	case 6: return "18:00h";
+    	case 7: return "19:00h";
+    	default: return "";
+    	}
     }
         
 }
