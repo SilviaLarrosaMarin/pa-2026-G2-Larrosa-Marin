@@ -24,6 +24,9 @@ public class EntornoGrafico {
         organizadorMusica = new MusicOrganizer();              
         System.out.println("Cargando las canciones en el reproductor...");        
         //aquí tienes que cargar en el organizador de música la lista de temas
+        String path = "src/main/resources/mp3/";
+        String extension = ".mp3";
+        organizadorMusica.loadSongs(path, extension, listaTemas); // Usar método loadSongs de MusicOrganizer
         playing = false; 
     }
   
