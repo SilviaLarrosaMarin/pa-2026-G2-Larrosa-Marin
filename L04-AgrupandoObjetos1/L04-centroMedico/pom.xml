@@ -20,7 +20,7 @@
                     <archive>
                         <manifest>
                             <mainClass>
-                                programa_principal.Prueba
+                                pa.programa_principal.Prueba
                             </mainClass>
                         </manifest>
                         <manifestEntries>
