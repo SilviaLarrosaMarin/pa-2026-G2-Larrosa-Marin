@@ -121,12 +121,16 @@ public class Medico {
     	int inicio;
     	int fin;
     	
-    	if (franja.equalsIgnoreCase("mañana")) {
+    	switch(franja) {
+    	case "mañana":
     		inicio = 0;
     		fin = 3;
-    	} else {
+    		break;
+    	case "tarde":
     		inicio = 4;
     		fin = 7;
+    		break;
+    	default: return null;
     	}
         
     	// Bucle que recorre el horario en el día y horas especificadas por la franja
@@ -142,8 +146,7 @@ public class Medico {
     			
     			// Crear objeto cita con los datos pasados por parámetro
     			Cita cita = new Cita(paciente, this.idMedico, this.especialidad, dia_str, hora_str);
-    			cita.imprimirCita();
-    			
+    			cita.imprimirCita();    			
     			return cita;
     		}
     	}
