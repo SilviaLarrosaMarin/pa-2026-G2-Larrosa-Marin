@@ -2,7 +2,6 @@ package pa.sinInterfaces;
 
 import java.util.ArrayList;
 
-import pa.Peticion;
 
 /**
  * Clase que contiene el método main

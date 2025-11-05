@@ -3,13 +3,12 @@ package pa.sinInterfaces;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import pa.Peticion;
 
 
 /**
  * Un ascensor tendrá los siguientes atributos:
  * - peticiones: es una colección ilimitada de objetos de tipo Peticion, y contiene todas las peticiones
- * de los usuarios que hay en la planta en la que el ascensor se ha detenido y a abierto sus puertas.
+ * de los usuarios que hay en la planta en la que el ascensor se ha detenido y ha abierto sus puertas.
  * 
  * - peticiones_validas: es una colección ilimitada de objetos de tipo Petición, y contiene las peticiones
  * válidas (son las peticiones de las personas que finalmente subirán al ascensor)
@@ -22,11 +21,20 @@ import pa.Peticion;
  * - IMPORTANTE: el ascensor puede recorrer un náximo de 20 pisos, y puede llevar a 4 personas como máximo.
  */
 public class Ascensor {
-	//declaración de atributos. Son todos privados.
 	
+	private ArrayList<Peticion> peticiones;
+	private ArrayList<Peticion> peticiones_validas;
+	private int piso_actual;
+	private Scanner lector_peticiones;
+
 	
 	public Ascensor() {
+		peticiones = new ArrayList<>();
+		peticiones_validas = new ArrayList<>();
+		piso_actual = 0;
+		lector_peticiones = new Scanner(System.in);
 		
+
 	}
 
 	
@@ -44,11 +52,19 @@ public class Ascensor {
 	 * de invocaciones previas     
 	 */
 	private String nuevo_aviso(Peticion p) {
-		String mensaje_error = null;
+		int destino = p.getPisoDestino();
+	    String mensaje_error = "";
+
+	    if (destino < 0 || destino > 20) {
+	        mensaje_error = "- El usuario que ha pulsado " + destino + " ha introducido un valor incorrecto\n";
+	    } else if (destino == piso_actual) {
+	        mensaje_error = "- El usuario que ha pulsado " + destino + " ya está en esa planta\n";
+	    } else if (peticiones_validas.size() >= 4) {
+	        mensaje_error = "- El usuario que ha pulsado " + destino + " ya no cabe\n";
+	    }
+
+	    return mensaje_error;
 		
-		//cada nuevo aviso se añadirá
-		
-		return mensaje_error;
 	}
 	
 	/**
@@ -63,7 +79,7 @@ public class Ascensor {
 	public int leer_peticiones() {
 		
 		System.out.println("\n---------------------------------");
-		System.out.println("Estoy en el piso: "); //aquí añadiremos el piso_actual);
+		System.out.println("Estoy en el piso: " + piso_actual); 
 		System.out.println("Puertas abiertas. Espero peticiones: ");
 		
 		//aquí leemos los pisos de destino. Usaremos los métodos hasNextInt() y nextInt() de la clase Scanner
@@ -72,8 +88,19 @@ public class Ascensor {
 		
 		//usaremos el método nextLine() cuando ya no queden enteros por leer, de esta forma
 		//"leeremos" el carácter 'A' y el retorno de carro
-		
-		return 0; //aquí devolveremos el número de peticiones que hemos leído	
+		int contador = 0;
+	    while (lector_peticiones.hasNext()) {
+	        if (lector_peticiones.hasNextInt()) {
+	            int destino = lector_peticiones.nextInt();
+	            peticiones.add(new Peticion(destino));
+	            contador++;
+	        } else {
+	            String token = lector_peticiones.next();
+	            if (token.equalsIgnoreCase("A")) break;
+	        }
+	    }
+
+	    return contador; //aquí devolveremos el número de peticiones que hemos leído	
 	}
 	
 	/**
@@ -102,16 +129,41 @@ public class Ascensor {
 	 * no válidas haya
 	 */
 	public int analizar_peticicones () {
-		String avisos = ""; //aquí vamos concatenando todos los avisos de todas las peticiones no válidas
-		
-		//analizamos una a una todas las peticiones pasadas por parámetro
-		
-		//mostramos los pisos de destino de las personas que suben al ascensor
-		
-		//mostramos los avisos, si los hay
-		
-		
-	   return 0;  //devolvemos el número de avisos (peticiones no válidas)
+		String avisos = "";
+	    int num_avisos = 0;
+
+	    for (Peticion p : peticiones) {
+	        String error = nuevo_aviso(p);
+	        if (error.equals("")) {
+	            if (peticiones_validas.size() < 4) {
+	                peticiones_validas.add(p);
+	            } else {
+	                avisos += "- El usuario que ha pulsado " + p.getPisoDestino() + " ya no cabe\n";
+	                num_avisos++;
+	            }
+	        } else {
+	            avisos += error;
+	            num_avisos++;
+	        }
+	    }
+
+	    peticiones.clear();
+
+	    if (!peticiones_validas.isEmpty()) {
+	        System.out.print("Entran en el ascensor las personas que van a los pisos: ");
+	        for (int i = 0; i < peticiones_validas.size(); i++) {
+	            System.out.print(peticiones_validas.get(i).getPisoDestino());
+	            if (i < peticiones_validas.size() - 1) System.out.print(", ");
+	        }
+	        System.out.println();
+	    }
+
+	    if (!avisos.equals("")) {
+	        System.out.println("AVISOS");
+	        System.out.println(avisos);
+	    }
+
+	    return num_avisos;
 	}
 	
 	
@@ -134,7 +186,26 @@ public class Ascensor {
 	 * - El ascensor actualizará su posición actual cada vez que suba o baje a la planta de destino.        
 	 */
 	public void llevar_personas_a_sus_destinos() {	
-			
+		if (peticiones_validas.isEmpty()) return;
+
+	    System.out.println("Cerrando puertas. Estamos en el piso: " + piso_actual);
+	    int anterior = -1;
+
+	    while (!peticiones_validas.isEmpty()) {
+	        Peticion p = peticiones_validas.remove(0);
+	        int destino = p.getPisoDestino();
+
+	        if (destino > piso_actual)
+	            System.out.println("Subiendo a una persona a la planta " + destino);
+	        else if (destino < piso_actual)
+	            System.out.println("Bajando a una persona a la planta " + destino);
+
+	        if (destino == anterior)
+	            System.out.println("La siguiente persona también puede bajar");
+
+	        piso_actual = destino;
+	        anterior = destino;
+	    }	
 	}
 	
 	

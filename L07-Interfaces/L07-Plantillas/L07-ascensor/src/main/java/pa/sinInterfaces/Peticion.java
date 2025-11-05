@@ -1,4 +1,5 @@
-package pa;
+
+package pa.sinInterfaces;
 
 /**
  * Cada petición se caracteriza por:
@@ -10,6 +11,22 @@ package pa;
  * en 1 su valor de id.
  */
 public class Peticion {
-	//los atributos se llamarán "piso_destino" e "id" y son privados.
+	private final int piso_destino;
+	private final int id;
+	private static int nextId = 0;
+	
+	public Peticion(int piso_destino) {
+		this.piso_destino = piso_destino;
+		this.id = nextId;
+		nextId++;
+	}
+	
+	public int getPisoDestino() {
+		return piso_destino;
+	}
+	
+	public int getId() {
+		return id;
+	}
 	
 }
